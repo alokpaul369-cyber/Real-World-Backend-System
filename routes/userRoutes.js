@@ -3,10 +3,11 @@ const {
   getProfile,
   updateProfile,
   changePassword,
-  deleteAccount
+  deleteAccount,
+  adminDashboard
 } = require("../controllers/userController");
-
 const protect = require("../middleware/authMiddleware");
+const admin = require("../middleware/adminMiddleware");
 
 const router = express.Router();
 
@@ -21,5 +22,8 @@ router.put("/change-password", protect, changePassword);
 
 // Delete Account
 router.delete("/profile", protect, deleteAccount);
+
+// Admin Dashboard
+router.get("/admin", protect, admin, adminDashboard);
 
 module.exports = router;
