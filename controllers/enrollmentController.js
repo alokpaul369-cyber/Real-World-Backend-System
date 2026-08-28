@@ -123,9 +123,78 @@ const cancelEnrollment = async (req, res) => {
   }
 };
 
+// Get All Enrollments Admin.................
+const getAllEnrollments = async (req, res) => {
+  try {
+    const enrollments = await Enrollment.find()
+    .populate("user", "name email role")
+    .populate("course", "title catagory price instructor")
+    .sort({createdAt: -1});
+    res.status(200).json({
+      message: "All enrollments retrived successfully",
+      count: enrollments.length,
+      enrollments
+    });
+  } catch(error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
+
+// Get Single Enrollment Admin..................
+const getEnrollmentById = async (req, res) => {
+  try {
+    const enrollment = await Enrollment.findById(
+      req.params.id
+    )
+    .populate("user", "name email role")
+    .populate("course", "title description catagory price instructor");
+    
+    if (!enrollment) {
+      return res.status(404).json({
+        message: "Enrollment not found"
+      });
+    }
+    res.status(200).json({
+      message: "Enrollment retrieved successfully",
+      enrollment
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
+
+// Delete Enrollment Admin............................
+const deleteEnrollment = async (req, res) => {
+  try {
+    const enrollment = await Enrollment.findById(req.params.id);
+    if (!enrollment) {
+      return res.status(404).json({
+        message: "Enrollment not found"
+      });
+    }
+    await enrollment.deleteOne();
+    res.status(200).json({
+      message: "Enrollment deleted successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
 module.exports = {
     enrollCourse,
     getMyCourses,
     checkEnrollment,
-    cancelEnrollment
+    cancelEnrollment,
+    getAllEnrollments,
+    getEnrollmentById,
+    deleteEnrollment
 };
