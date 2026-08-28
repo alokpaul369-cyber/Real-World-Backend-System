@@ -13,12 +13,14 @@ app.use(express.json());
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const courseRoutes = require("./routes/courseRoutes");
+const enrollmentRoutes = require("./routes/enrollmentRoutes")
 
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", courseRoutes);
- 
+app.use("/api/enrollments", enrollmentRoutes);
+
 
 app.get("/", (req, res) => {
   res.json({
