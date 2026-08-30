@@ -7,7 +7,8 @@ const {
   cancelEnrollment,
   getAllEnrollments,
   getEnrollmentById,
-  deleteEnrollment
+  deleteEnrollment,
+  getEnrollmentStats
 } = require("../controllers/enrollmentController");
 
 const protect = require("../middleware/authMiddleware");
@@ -18,6 +19,7 @@ router.get("/my-courses", protect, getMyCourses);
 router.get("/check/:courseId", protect, checkEnrollment);
 router.delete("/:courseId", protect, cancelEnrollment);
 router.get("/admin",protect, admin, getAllEnrollments);
+router.get("/admin/stats",protect, admin, getEnrollmentStats);
 router.get("/admin/:id",protect, admin, getEnrollmentById);
 router.delete("/admin/:id",protect, admin, deleteEnrollment);
 module.exports = router;

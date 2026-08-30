@@ -189,6 +189,69 @@ const deleteEnrollment = async (req, res) => {
     });
   }
 };
+
+// Enrollment Statistics....................
+const getEnrollmentStats = async (req, res) => {
+  try {
+    const totalEnrollments = await Enrollment.countDocuments();
+    const activeEnrollments = await Enrollment.countDocuments({status: "active"});
+    const cancelledEnrollments = await Enrollment.countDocuments({status: "cancelled"});
+    const courseStats = await Enrollment.aggregate([
+      {
+        $match: {
+          status: "active"
+        }
+      },
+      {
+        $group : {
+          _id: "$course",
+          totalStudents: {
+            $sum: 1
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "_id",
+          foreignField: "_id",
+          as: "course"
+        }
+      },
+      {
+        $unwind: "$course"
+      },
+      {
+        $project: {
+          _id: 0,
+          courseId: "$_id",
+          courseTitle: "$course.title",
+          category: "$course.category",
+          totalStudents: 1
+        }
+      },
+      {
+        $sort: {
+          totalStudents: -1
+        }
+      }
+    ]);
+    res.status(200).json({
+      message:"Enrollment statistics retrieved successfully",
+      statistics: {
+        totalEnrollments,
+        activeEnrollments,
+        cancelledEnrollments
+      },
+      courseStats
+    });
+  } catch(error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message
+    });
+  }
+};
 module.exports = {
     enrollCourse,
     getMyCourses,
@@ -196,5 +259,6 @@ module.exports = {
     cancelEnrollment,
     getAllEnrollments,
     getEnrollmentById,
-    deleteEnrollment
+    deleteEnrollment,
+    getEnrollmentStats
 };
