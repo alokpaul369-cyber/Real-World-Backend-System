@@ -1,4 +1,5 @@
 const Course = require("../models/Course");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 //Create Course ..........................
 const createCourse = async (req, res) => {
@@ -249,10 +250,48 @@ const deleteCourse = async (req, res) => {
     });
   }
 };
+
+// Course Image Upload........................
+const uploadCourseImage = async (req, res) => {
+  try {
+    const course = await Course.findById (
+      req.params.id
+    );
+    if (!course) {
+      return res.status(404).json({
+        message: "Course not Found"
+      });
+    }
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Please select an image"
+      });
+    }
+    const result = await uploadToCloudinary(
+      req.file.buffer,
+      "mern-backend/courses"
+    );
+    course.image = {
+      url: result.secure_url,
+      publicId: result.public_id
+    };
+    await course.save();
+    res.status(200).json({
+      message: "Course image uploaded successfully",
+      image: course.image
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Image upload failed",
+      error: error.message
+    });
+  }
+};
 module.exports = {
   createCourse,
   getCourses,
   getCourseById,
   updateCourse,
   deleteCourse,
+  uploadCourseImage
 };
