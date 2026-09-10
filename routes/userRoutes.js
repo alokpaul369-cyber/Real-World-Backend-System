@@ -4,10 +4,12 @@ const {
   updateProfile,
   changePassword,
   deleteAccount,
-  adminDashboard
+  adminDashboard,
+  uploadProfileImage
 } = require("../controllers/userController");
 const protect = require("../middleware/authMiddleware");
 const admin = require("../middleware/adminMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
 
@@ -25,5 +27,8 @@ router.delete("/profile", protect, deleteAccount);
 
 // Admin Dashboard
 router.get("/admin", protect, admin, adminDashboard);
+
+// Profile Image
+router.post("/profile-image", protect, upload.single("image"), uploadProfileImage);
 
 module.exports = router;

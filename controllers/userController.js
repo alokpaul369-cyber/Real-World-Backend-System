@@ -1,5 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
+const cloudinary = require("../config/cloudinary");
+
 
 //Get Profile...........................
 const getProfile = async (req, res) => {
@@ -130,10 +133,40 @@ const adminDashboard = async (req, res) => {
   });
 };
 
+// Upload Profile Image.........................
+const uploadProfileImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Please select an image"
+      });
+    }
+    const result = await uploadToCloudinary(
+      req.file.buffer,
+      "mern-backend/users"
+    );
+    req.user.profileImage = {
+      url: result.secure_url,
+      publicId: result.public_Id
+    };
+    await req.user.save();
+    res.status(200).json({
+      message: "Profile image uploaded successfully",
+      profileImage: req.user.profileImage
+    });
+  } catch(error) {
+      res.status(500).json({
+        message: "Image upload failed",
+        error: error.message
+      });
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
   changePassword,
   deleteAccount,
-  adminDashboard
+  adminDashboard,
+  uploadProfileImage
 };

@@ -41,6 +41,16 @@ const courseSchema = new mongoose.Schema(
     isPublished: {
       type: Boolean,
       default: true
+    },
+    image: {
+      url: {
+        type: String,
+        default: ""
+      },
+      publicId: {
+        type: String,
+        default: ""
+      }
     }
   },
   {

@@ -23,6 +23,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user"
+    },
+    profileImage: {
+      url: {
+        type: String,
+        default: ""
+      },
+      publicId: {
+        type: String,
+        default: ""
+      }
     }
   },
   {
